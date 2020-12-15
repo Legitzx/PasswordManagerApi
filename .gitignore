@@ -1,0 +1,6 @@
+# GOLAND .IDEA
+.idea
+
+# USED FOR STORING MONGODB URI
+# MONGO_URI=...
+config.env
