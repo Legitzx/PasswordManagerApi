@@ -2,7 +2,7 @@
 
 The PasswordManagerApi is a REST Api that handles CRUD operations for the [PasswordManager](https://github.com/Legitzx/PasswordManager).
 
-## Usage
+## Functionality
 
 
 **Method: [POST]** 
