@@ -18,6 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// [false = .env file not loaded] [true = .env file loaded]
 var loaded = false
 
 // Registers a user. Takes in a vault key, email, and empty accounts array
@@ -135,10 +136,6 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) { // TODO: UPDATE - M
 	// is user authed?
 	isAuth, message, id := isLoggedIn(r)
 
-	fmt.Println("IsAuth: ", isAuth)
-	fmt.Println("Message: " + message)
-	fmt.Println("ID: " + id)
-
 	var result model.ResponseResult
 
 	// User is not authed, send error and return
@@ -148,13 +145,40 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) { // TODO: UPDATE - M
 		return
 	}
 
-	// Get JSON Message
+	// Get JSON Message & Convert to User model
+	var user model.User
+	var res model.ResponseResult
+	body, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(body, &user)
 
-	// Convert to model
+	if err != nil {
+		res.Error = err.Error()
+		json.NewEncoder(w).Encode(res)
+		return
+	}
 
 	// Update MongoDB
 
+	collection, err := db.GetDBCollection()
+
+	if err != nil {
+		res.Error = err.Error()
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	err = collection.FindOneAndReplace(context.TODO(), bson.D{{"id", id}}, user).Decode(&result)
+
+	// Check for error
+	if err != nil {
+		res.Error = err.Error()
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
 	// Return success
+	res.Result = "Success: User Updated"
+	json.NewEncoder(w).Encode(res)
 }
 
 // Checks to see if a user is authenticated
