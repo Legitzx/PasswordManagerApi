@@ -128,9 +128,41 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-// TODO: METHOD RETURNS A VAULT TO A USER
+// Returns a Vault to a user
+func GetVaultHandler(w http.ResponseWriter, r *http.Request) {
+	isAuth, message, id := isLoggedIn(r)
 
-func UpdateHandler(w http.ResponseWriter, r *http.Request) { // TODO: UPDATE - MUST HAVE VALID AUTH -> UPDATES VAULT
+	var user model.User
+	var result model.ResponseResult
+
+	if !isAuth {
+		result.Error = message
+		json.NewEncoder(w).Encode(result)
+		return
+	}
+
+	// Get Database
+	collection, err := db.GetDBCollection()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Find User
+	err = collection.FindOne(context.TODO(), bson.D{{"id", id}}).Decode(&user)
+
+	if err != nil {
+		result.Error = err.Error()
+		json.NewEncoder(w).Encode(result)
+		return
+	}
+
+	// Send to User
+	json.NewEncoder(w).Encode(user)
+}
+
+// "Updates" a Users Vault (Actually Replaces the entire users vault with the updated one)
+func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// is user authed?
@@ -232,7 +264,7 @@ func getSecret() string {
 
 // TODO: LOGOUT
 
-/*
+/* EXAMPLE INPUT/OUTPUT
 {
 	"id": "asngasg",
 	"email": "legitzx@gmail.com",
