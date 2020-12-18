@@ -5,16 +5,16 @@ The PasswordManagerApi is a REST Api that handles CRUD operations for the [Passw
 ## Functionality
 
 
-**Register** ``Method: POST``
+***Register*** ``Method: POST``
  - Description: Registers a user.
  - Input: User Object with id & email
-**Login** ``Method: POST``
+***Login*** ``Method: POST``
  - Description: Takes in the users id and checks to see if they are in the database, if so they are authenticated using a JSON Web Token (JWT).
  - Input: User Object with id
-**Get Vault** ``Method: GET``
+***Get Vault*** ``Method: GET``
  - Description: Sends back User Objects to authenticated users.
  - Input: User Object with id
-**Update Vault** ``Method: PUT``
+***Update Vault*** ``Method: PUT``
  - Description: Updates a users Vault. Must be authenticated.
  - Input: User Object with id
 ## License
