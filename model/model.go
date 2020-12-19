@@ -3,6 +3,7 @@ package model
 type User struct {
 	Id       string    `json:"id"`
 	Email    string    `json:"email"`
+	Iv       string    `json:"iv"`
 	Accounts []Account `json:"accounts"`
 }
 
@@ -14,7 +15,6 @@ type Account struct {
 }
 
 type ResponseResult struct {
-	Error  string `json:"error"`
 	Result string `json:"result"`
 	Token  string `json:"token"`
 }

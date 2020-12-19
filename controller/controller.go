@@ -31,7 +31,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var res model.ResponseResult
 
 	if err != nil {
-		res.Error = err.Error()
+		res.Result = err.Error()
 		json.NewEncoder(w).Encode(res)
 		return
 	}
@@ -39,7 +39,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	collection, err := db.GetDBCollection()
 
 	if err != nil {
-		res.Error = err.Error()
+		res.Result = err.Error()
 		json.NewEncoder(w).Encode(res)
 		return
 	}
@@ -51,25 +51,23 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			// insert user
 			_, err = collection.InsertOne(context.TODO(), user)
 			if err != nil {
-				res.Error = "Error While Creating User, Try Again"
+				res.Result = "Error While Creating User, Try Again"
 				json.NewEncoder(w).Encode(res)
 				return
 			}
 
 			res.Result = "Registration Successful"
-			w.WriteHeader(201)
 			json.NewEncoder(w).Encode(res)
 			return
 		}
 
-		res.Error = err.Error()
+		res.Result = err.Error()
 		json.NewEncoder(w).Encode(res)
 		return
 	}
 
 	// Runs if user with the specified email already exists
-	res.Error = "Email Already Exists in Database"
-	w.WriteHeader(422)
+	res.Result = "Email Already Exists in Database"
 	json.NewEncoder(w).Encode(res)
 	return
 }
@@ -107,7 +105,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	err = collection.FindOne(context.TODO(), bson.D{{"id", user.Id}}).Decode(&result)
 
 	if err != nil {
-		res.Error = "Invalid id"
+		res.Result = "Invalid id"
 		json.NewEncoder(w).Encode(res)
 		return
 	}
@@ -120,7 +118,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString([]byte(getSecret()))
 	if err != nil {
-		res.Error = "Auth Failed"
+		res.Result = "Auth Failed"
 		json.NewEncoder(w).Encode(res)
 	}
 
@@ -136,7 +134,7 @@ func GetVaultHandler(w http.ResponseWriter, r *http.Request) {
 	var result model.ResponseResult
 
 	if !isAuth {
-		result.Error = message
+		result.Result = message
 		json.NewEncoder(w).Encode(result)
 		return
 	}
@@ -152,7 +150,7 @@ func GetVaultHandler(w http.ResponseWriter, r *http.Request) {
 	err = collection.FindOne(context.TODO(), bson.D{{"id", id}}).Decode(&user)
 
 	if err != nil {
-		result.Error = err.Error()
+		result.Result = err.Error()
 		json.NewEncoder(w).Encode(result)
 		return
 	}
@@ -172,7 +170,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// User is not authed, send error and return
 	if !isAuth {
-		result.Error = message
+		result.Result = message
 		json.NewEncoder(w).Encode(result)
 		return
 	}
@@ -184,7 +182,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.Unmarshal(body, &user)
 
 	if err != nil {
-		res.Error = err.Error()
+		res.Result = err.Error()
 		json.NewEncoder(w).Encode(res)
 		return
 	}
@@ -194,7 +192,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	collection, err := db.GetDBCollection()
 
 	if err != nil {
-		res.Error = err.Error()
+		res.Result = err.Error()
 		json.NewEncoder(w).Encode(res)
 		return
 	}
@@ -203,7 +201,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check for error
 	if err != nil {
-		res.Error = err.Error()
+		res.Result = err.Error()
 		json.NewEncoder(w).Encode(res)
 		return
 	}
@@ -233,7 +231,7 @@ func isLoggedIn(r *http.Request) (bool, string, string) {
 
 	// If token is not valid
 	if token == nil {
-		res.Error = "Invalid Authentication Key"
+		res.Result = "Invalid Authentication Key"
 		//json.NewEncoder(w).Encode(res)
 		return false, "Invalid Authentication Key", ""
 	}
