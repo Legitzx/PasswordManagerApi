@@ -22,4 +22,4 @@ The PasswordManagerApi is a REST Api that handles CRUD operations for the [Passw
  
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
